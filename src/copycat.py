@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """Sys provides functionality to exit the program. tkinter provides UI.
 Regex for punctuation matching"""
 import sys
@@ -102,7 +103,7 @@ create_welcome_message()
 PLACEHOLDER_TEXT = "Type your message here..."
 
 
-def add_placeholder(event=None):
+def add_placeholder(event=None):  # pylint: disable=unused-argument
     """
     Adds placeholder text if the input box is empty
     """
@@ -110,7 +111,7 @@ def add_placeholder(event=None):
         input_area.insert("1.0", PLACEHOLDER_TEXT)
 
 
-def remove_placeholder(event=None):
+def remove_placeholder(event=None):  # pylint: disable=unused-argument
     """
     Removes placeholder text when the user starts typing
     """
@@ -140,7 +141,7 @@ def create_user_input_area():
 
     # Send button (beside the user input box)
     send = tk.Button(window, text="Send", command=show_response)
-    send.grid(row=1, column=1, padx=10, pady=10, sticky='e')
+    send.grid(row=1, column=1, padx=10, pady=10)
     return input_box
 
 
