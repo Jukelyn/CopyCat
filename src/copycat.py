@@ -36,8 +36,8 @@ def show_response(event=None) -> None:  # pylint: disable=unused-argument
     Displays the CopyCat response in the GUI alongside the user input
     '''
 
-    user_in = input_box.get("1.0", tk.END).strip()
-    input_box.delete("1.0", tk.END)
+    user_in = input_area.get("1.0", tk.END).strip()
+    input_area.delete("1.0", tk.END)
     # DISABLED -> NORMAL to allow tk to show stuff
     chat_log.config(state=tk.NORMAL)
 
@@ -52,6 +52,8 @@ def show_response(event=None) -> None:  # pylint: disable=unused-argument
     chat_log.insert(tk.END, "CopyCat: " + response + "\n")
     chat_log.see(tk.END)
     chat_log.config(state=tk.DISABLED)
+
+    return 'break'  # Stops \n from staying in the user input area
 
 
 # Main window
@@ -103,21 +105,29 @@ def create_welcome_message():
 
 create_welcome_message()
 
-# User input box (below the log)
-input_box = tk.Text(window, width=40, height=4, wrap=tk.WORD, relief=tk.FLAT,
-                    bd=5, highlightbackground="white",
-                    highlightthickness=2)
-input_box.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
 
-# User input scrollbar (hidden initially)
-user_input_scrollbar = tk.Scrollbar(window, command=input_box.yview)
-input_box.config(yscrollcommand=user_input_scrollbar.set)
+def create_user_input_area():
+    """
+    Creates the user input area
+    """
+    # User input box (below the log)
+    input_box = tk.Text(window, width=40, height=4, wrap=tk.WORD,
+                        relief=tk.FLAT, bd=5, highlightbackground="white",
+                        highlightthickness=2)
+    input_box.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
 
-# Send button (beside the user input box)
-send = tk.Button(window, text="Send", command=show_response)
-send.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+    # User input scrollbar (hidden initially)
+    user_input_scrollbar = tk.Scrollbar(window, command=input_box.yview)
+    input_box.config(yscrollcommand=user_input_scrollbar.set)
 
-input_box.bind("<Return>", show_response)
+    # Send button (beside the user input box)
+    send = tk.Button(window, text="Send", command=show_response)
+    send.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+    return input_box
+
+
+input_area = create_user_input_area()
+input_area.bind("<Return>", show_response)  # Enter/Return to send
 
 # Start the UI event loop
 window.mainloop()
