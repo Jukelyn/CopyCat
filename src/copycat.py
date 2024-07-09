@@ -60,11 +60,6 @@ def show_response(event=None) -> None:  # pylint: disable=unused-argument
 window = tk.Tk()
 window.title("Stop copying me")
 
-# Make the window resizable
-window.rowconfigure(0, weight=1)
-window.columnconfigure(0, weight=1)
-window.columnconfigure(1, weight=1)
-
 
 def create_chat_log():
     """
@@ -104,6 +99,23 @@ def create_welcome_message():
 
 
 create_welcome_message()
+PLACEHOLDER_TEXT = "Type your message here..."
+
+
+def add_placeholder(event=None):
+    """
+    Adds placeholder text if the input box is empty
+    """
+    if not input_area.get("1.0", tk.END).strip():
+        input_area.insert("1.0", PLACEHOLDER_TEXT)
+
+
+def remove_placeholder(event=None):
+    """
+    Removes placeholder text when the user starts typing
+    """
+    if input_area.get("1.0", tk.END).strip() == PLACEHOLDER_TEXT:
+        input_area.delete("1.0", tk.END)
 
 
 def create_user_input_area():
@@ -120,9 +132,15 @@ def create_user_input_area():
     user_input_scrollbar = tk.Scrollbar(window, command=input_box.yview)
     input_box.config(yscrollcommand=user_input_scrollbar.set)
 
+    # Add placeholder text
+    input_box.insert("1.0", PLACEHOLDER_TEXT)
+    input_box.bind("<FocusIn>", remove_placeholder)
+    input_box.bind("<FocusOut>", add_placeholder)
+    # input_box.config(fg="white")  # Not needed but here if I choose to use
+
     # Send button (beside the user input box)
     send = tk.Button(window, text="Send", command=show_response)
-    send.grid(row=1, column=1, padx=10, pady=10, sticky='ew')
+    send.grid(row=1, column=1, padx=10, pady=10, sticky='e')
     return input_box
 
 
@@ -130,4 +148,9 @@ input_area = create_user_input_area()
 input_area.bind("<Return>", show_response)  # Enter/Return to send
 
 # Start the UI event loop
+window.minsize(375, 400)
+# Makes the window resizable
+window.rowconfigure(0, weight=1)
+window.columnconfigure(0, weight=1)
+window.columnconfigure(1, weight=1)
 window.mainloop()
