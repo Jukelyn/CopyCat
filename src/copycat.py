@@ -1,5 +1,7 @@
-"""Sys provides functionality to exit the program. tkinter provides UI."""
+"""Sys provides functionality to exit the program. tkinter provides UI.
+Regex for punctuation matching"""
 import sys
+import re
 import tkinter as tk
 from tkinter import scrolledtext
 
@@ -8,7 +10,7 @@ EXIT_KEYWORDS = ["exit", "quit", "bye"]
 
 def arr_to_string(arr: list) -> str:
     '''
-    Cleaner array to string
+    Clean array to string
     '''
     res = ""
     for word in arr:
@@ -22,7 +24,11 @@ def get_response(user_in: str) -> str:
     because it may get updated to respond differently in the future. For now
     it may seem a bit redundant or useless.
     '''
-    return f'{user_in}!'
+
+    if re.match(r'[^\w\s]', user_in[-1]):
+        # Don't want extra punctuation
+        user_in = re.sub(r'[^\w\s]', '', user_in[:-1])
+    return f'{user_in.strip()}!'
 
 
 def show_response(event=None) -> None:  # pylint: disable=unused-argument
@@ -32,19 +38,20 @@ def show_response(event=None) -> None:  # pylint: disable=unused-argument
 
     user_in = input_box.get("1.0", tk.END).strip()
     input_box.delete("1.0", tk.END)
-    log.config(state=tk.NORMAL)  # DISABLED -> NORMAL to allow tk to show stuff
+    # DISABLED -> NORMAL to allow tk to show stuff
+    chat_log.config(state=tk.NORMAL)
 
     if user_in.lower() in EXIT_KEYWORDS:
-        log.insert(tk.END, "CopyCat: Goodbye!\n")
-        log.see(tk.END)
+        chat_log.insert(tk.END, "CopyCat: Goodbye!\n")
+        chat_log.see(tk.END)
         sys.exit(0)
 
-    log.insert(tk.END, "You: " + user_in + "\n")
-    log.see(tk.END)
+    chat_log.insert(tk.END, "You: " + user_in + "\n")
+    chat_log.see(tk.END)
     response = get_response(user_in)
-    log.insert(tk.END, "CopyCat: " + response + "\n")
-    log.see(tk.END)
-    log.config(state=tk.DISABLED)
+    chat_log.insert(tk.END, "CopyCat: " + response + "\n")
+    chat_log.see(tk.END)
+    chat_log.config(state=tk.DISABLED)
 
 
 # Main window
@@ -56,19 +63,50 @@ window.rowconfigure(0, weight=1)
 window.columnconfigure(0, weight=1)
 window.columnconfigure(1, weight=1)
 
+
+def create_chat_log():
+    """
+    Creates the chat log
+    """
+    log = scrolledtext.ScrolledText(window, width=60, height=20, wrap=tk.WORD,
+                                    bd=30, relief=tk.FLAT,
+                                    highlightbackground="white",
+                                    highlightthickness=3)
+    log.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
+
+    return log
+
+
 # The chat log
-log = scrolledtext.ScrolledText(window, width=60, height=20, wrap=tk.WORD)
-log.grid(row=0, column=0, columnspan=2, padx=10, pady=10, sticky='nsew')
+chat_log = create_chat_log()
 
-exit_words = EXIT_KEYWORDS
-welcome_message = f'Welcome! My name is CopyCat. \
-Enter any of the following to quit: {arr_to_string(exit_words)}.\n\n'  # May edit later...
 
-log.insert(tk.END, welcome_message)
-log.config(state=tk.DISABLED)  # Do not want user to be able to type in log
+def get_exit_words() -> list:
+    """EXIT_KEYWORDS getter"""
+    return EXIT_KEYWORDS
+
+
+def create_welcome_message():
+    """
+    Welcome message for the chat log
+    """
+    exit_words = get_exit_words()
+    msg = 'Welcome! My name is CopyCat. '
+    msg += f'Enter any of the following to quit: {arr_to_string(exit_words)}.'
+    msg += '\n\n'
+    # May edit later...
+
+    chat_log.insert(tk.END, msg)
+    # Do not want user to be able to type in log
+    chat_log.config(state=tk.DISABLED)
+
+
+create_welcome_message()
 
 # User input box (below the log)
-input_box = tk.Text(window, width=40, height=4, wrap=tk.WORD)
+input_box = tk.Text(window, width=40, height=4, wrap=tk.WORD, relief=tk.FLAT,
+                    bd=5, highlightbackground="white",
+                    highlightthickness=2)
 input_box.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
 
 # User input scrollbar (hidden initially)
