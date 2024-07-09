@@ -29,7 +29,7 @@ def get_response(user_in: str) -> str:
     if re.match(r'[^\w\s]', user_in[-1]):
         # Don't want extra punctuation
         user_in = re.sub(r'[^\w\s]', '', user_in[:-1])
-    return f'{user_in.strip()}!'
+    return f'{user_in.strip()}!'.upper()
 
 
 def show_response(event=None) -> None:  # pylint: disable=unused-argument

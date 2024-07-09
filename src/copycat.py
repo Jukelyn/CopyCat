@@ -29,7 +29,7 @@ def get_response(user_in: str) -> str:
     if re.match(r'[^\w\s]', user_in[-1]):
         # Don't want extra punctuation
         user_in = re.sub(r'[^\w\s]', '', user_in[:-1])
-    return f'{user_in.strip()}!'
+    return f'{user_in.strip()}!'.upper()
 
 
 def show_response(event=None) -> None:  # pylint: disable=unused-argument
@@ -84,7 +84,7 @@ def get_exit_words() -> list:
     return EXIT_KEYWORDS
 
 
-def create_welcome_message():
+def create_welcome_message() -> None:
     """
     Welcome message for the chat log
     """
@@ -103,7 +103,7 @@ create_welcome_message()
 PLACEHOLDER_TEXT = "Type your message here..."
 
 
-def add_placeholder(event=None):  # pylint: disable=unused-argument
+def add_placeholder(event=None) -> None:  # pylint: disable=unused-argument
     """
     Adds placeholder text if the input box is empty
     """
@@ -111,7 +111,7 @@ def add_placeholder(event=None):  # pylint: disable=unused-argument
         input_area.insert("1.0", PLACEHOLDER_TEXT)
 
 
-def remove_placeholder(event=None):  # pylint: disable=unused-argument
+def remove_placeholder(event=None) -> None:  # pylint: disable=unused-argument
     """
     Removes placeholder text when the user starts typing
     """
