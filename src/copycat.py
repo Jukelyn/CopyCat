@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
-"""Sys provides functionality to exit the program. tkinter provides UI.
-Regex for punctuation matching"""
+"""
+Sys provides functionality to exit the program. tkinter provides UI.
+Regex for punctuation matching
+"""
 import sys
 import re
 import tkinter as tk
 from tkinter import scrolledtext
 
 EXIT_KEYWORDS = ["exit", "quit", "bye"]
+MSG_COUNTER = 0
 
 
 def arr_to_string(arr: list) -> str:
-    '''
+    """
     Clean array to string
-    '''
+    """
     res = ""
     for word in arr:
         res += word + ", "
@@ -20,22 +23,26 @@ def arr_to_string(arr: list) -> str:
 
 
 def get_response(user_in: str) -> str:
-    '''
+    """
     Gets the user's response and just copies it back. This is only a function
     because it may get updated to respond differently in the future. For now
     it may seem a bit redundant or useless.
-    '''
+    """
+    global MSG_COUNTER  # pylint: disable=global-statement
+    MSG_COUNTER += 1
+    update_message_counter()
 
-    if re.match(r'[^\w\s]', user_in[-1]):
-        # Don't want extra punctuation
-        user_in = re.sub(r'[^\w\s]', '', user_in[:-1])
-    return f'{user_in.strip()}!'.upper()
+    if len(user_in) > 1:
+        if re.match(r'[^\w\s]', user_in[-1]):
+            # Don't want extra punctuation
+            user_in = re.sub(r'[^\w\s]', '', user_in[:-1])
+    return f'{user_in.strip()}!'.upper() + '\n'
 
 
 def show_response(event=None) -> None:  # pylint: disable=unused-argument
-    '''
+    """
     Displays the CopyCat response in the GUI alongside the user input
-    '''
+    """
 
     user_in = input_area.get("1.0", tk.END).strip()
     input_area.delete("1.0", tk.END)
@@ -90,8 +97,8 @@ def create_welcome_message() -> None:
     """
     exit_words = get_exit_words()
     msg = 'Welcome! My name is CopyCat. '
-    msg += f'Enter any of the following to quit: {arr_to_string(exit_words)}.'
-    msg += '\n\n'
+    msg += 'Enter any of the following to quit: '
+    msg += f'{arr_to_string(exit_words)}.\n\n\n'
     # May edit later...
 
     chat_log.insert(tk.END, msg)
@@ -100,6 +107,26 @@ def create_welcome_message() -> None:
 
 
 create_welcome_message()
+
+
+def update_message_counter() -> str:
+    """
+    Message counter box
+    """
+    message_counter_box = tk.Text(window, width=16 + len(str(MSG_COUNTER)),
+                                  height=1, wrap=tk.WORD,
+                                  relief=tk.FLAT, bd=5,
+                                  highlightbackground="white",
+                                  highlightthickness=2)
+    message_counter_box.grid(row=1, column=1)
+    msg = f'Messages sent: {MSG_COUNTER}'
+    message_counter_box.config(state=tk.NORMAL)
+    message_counter_box.insert("1.0", msg)
+    message_counter_box.config(state=tk.DISABLED)
+    return msg
+
+
+update_message_counter()
 PLACEHOLDER_TEXT = "Type your message here..."
 
 
@@ -124,10 +151,12 @@ def create_user_input_area():
     Creates the user input area
     """
     # User input box (below the log)
-    input_box = tk.Text(window, width=40, height=4, wrap=tk.WORD,
+    input_box = tk.Text(window, width=40, height=4,
+                        padx=5, pady=5, wrap=tk.WORD,
                         relief=tk.FLAT, bd=5, highlightbackground="white",
                         highlightthickness=2)
-    input_box.grid(row=1, column=0, padx=10, pady=10, sticky='ew')
+    input_box.grid(row=1, rowspan=2,
+                   column=0, padx=10, pady=10, sticky='ew')
 
     # User input scrollbar (hidden initially)
     user_input_scrollbar = tk.Scrollbar(window, command=input_box.yview)
@@ -141,17 +170,18 @@ def create_user_input_area():
 
     # Send button (beside the user input box)
     send = tk.Button(window, text="Send", command=show_response)
-    send.grid(row=1, column=1, padx=10, pady=10)
+    send.grid(row=2, column=1, padx=10, pady=10)
     return input_box
 
 
 input_area = create_user_input_area()
 input_area.bind("<Return>", show_response)  # Enter/Return to send
 
-# Start the UI event loop
-window.minsize(375, 400)
-# Makes the window resizable
+window.minsize(500, 400)
+# Makes the window grid cells resizable in this manner:
 window.rowconfigure(0, weight=1)
 window.columnconfigure(0, weight=1)
 window.columnconfigure(1, weight=1)
+
+# Start the UI event loop
 window.mainloop()
