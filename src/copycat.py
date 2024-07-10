@@ -42,7 +42,7 @@ def get_response(user_in: str) -> str:
     return res.upper() if SHOUTING else res
 
 
-def toggle_shout():
+def toggle_shout() -> None:
     """
     Toggles the shouting
     """
@@ -60,10 +60,13 @@ def show_response(event=None) -> None:  # pylint: disable=unused-argument
     # DISABLED -> NORMAL to allow tk to add stuff
     chat_log.config(state=tk.NORMAL)
 
+    def kill():
+        sys.exit(0)
+
     if user_in.lower() in EXIT_KEYWORDS:
         chat_log.insert(tk.END, "CopyCat: Goodbye!\n")
-        chat_log.see(tk.END)
-        sys.exit(0)
+        chat_log.after(1000, kill)
+        return 'break'
 
     chat_log.insert(tk.END, "You: " + user_in + "\n")
     chat_log.see(tk.END)
@@ -171,7 +174,7 @@ input_area = create_user_input_area()
 input_area.bind("<Return>", show_response)  # Enter/Return to send
 
 
-def update_message_counter():
+def update_message_counter() -> None:
     """
     Message counter box
     """
@@ -189,7 +192,7 @@ def update_message_counter():
 update_message_counter()
 
 
-def display_information():
+def display_information() -> None:
     """
     Information displaying frame
     """
@@ -209,7 +212,7 @@ def display_information():
     info_box.config(state=tk.DISABLED)
 
 
-def create_menu():
+def create_menu() -> None:
     """
     Creates the menu.
     """
