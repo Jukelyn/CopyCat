@@ -8,7 +8,7 @@ import re
 import tkinter as tk
 from tkinter import scrolledtext
 
-EXIT_KEYWORDS = ["exit", "quit", "bye"]
+EXIT_KEYWORDS = sorted(["end", "exit", "quit", "bye"])
 MSG_COUNTER = 0
 
 
@@ -46,7 +46,7 @@ def show_response(event=None) -> None:  # pylint: disable=unused-argument
 
     user_in = input_area.get("1.0", tk.END).strip()
     input_area.delete("1.0", tk.END)
-    # DISABLED -> NORMAL to allow tk to show stuff
+    # DISABLED -> NORMAL to allow tk to add stuff
     chat_log.config(state=tk.NORMAL)
 
     if user_in.lower() in EXIT_KEYWORDS:
@@ -66,7 +66,7 @@ def show_response(event=None) -> None:  # pylint: disable=unused-argument
 
 # Main window
 window = tk.Tk()
-window.title("Stop copying me")
+window.title("Stop copying me!")
 
 
 def create_chat_log():
@@ -86,16 +86,11 @@ def create_chat_log():
 chat_log = create_chat_log()
 
 
-def get_exit_words() -> list:
-    """EXIT_KEYWORDS getter"""
-    return EXIT_KEYWORDS
-
-
 def create_welcome_message() -> None:
     """
     Welcome message for the chat log
     """
-    exit_words = get_exit_words()
+    exit_words = EXIT_KEYWORDS
     msg = 'Welcome! My name is CopyCat. '
     msg += 'Enter any of the following to quit: '
     msg += f'{arr_to_string(exit_words)}.\n\n\n'
@@ -109,13 +104,12 @@ def create_welcome_message() -> None:
 create_welcome_message()
 
 
-def update_message_counter() -> str:
+def update_message_counter():
     """
     Message counter box
     """
     message_counter_box = tk.Text(window, width=16 + len(str(MSG_COUNTER)),
-                                  height=1, wrap=tk.WORD,
-                                  relief=tk.FLAT, bd=5,
+                                  height=1, wrap=tk.WORD, relief=tk.FLAT, bd=5,
                                   highlightbackground="white",
                                   highlightthickness=2)
     message_counter_box.grid(row=1, column=1)
@@ -123,7 +117,6 @@ def update_message_counter() -> str:
     message_counter_box.config(state=tk.NORMAL)
     message_counter_box.insert("1.0", msg)
     message_counter_box.config(state=tk.DISABLED)
-    return msg
 
 
 update_message_counter()
