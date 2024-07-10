@@ -10,6 +10,7 @@ from tkinter import scrolledtext
 
 EXIT_KEYWORDS = sorted(["end", "exit", "quit", "bye"])
 MSG_COUNTER = 0
+SHOUTING = False
 
 
 def arr_to_string(arr: list) -> str:
@@ -36,7 +37,17 @@ def get_response(user_in: str) -> str:
         if re.match(r'[^\w\s]', user_in[-1]):
             # Don't want extra punctuation
             user_in = re.sub(r'[^\w\s]', '', user_in[:-1])
-    return f'{user_in.strip()}!'.upper() + '\n'
+
+    res = f'{user_in.strip()}!' + '\n'
+    return res.upper() if SHOUTING else res
+
+
+def toggle_shout():
+    """
+    Toggles the shouting
+    """
+    global SHOUTING  # pylint: disable=global-statement
+    SHOUTING = not SHOUTING
 
 
 def show_response(event=None) -> None:  # pylint: disable=unused-argument
@@ -67,6 +78,11 @@ def show_response(event=None) -> None:  # pylint: disable=unused-argument
 # Main window
 window = tk.Tk()
 window.title("Stop copying me!")
+window.minsize(500, 400)
+# Makes the window grid cells resizable in this manner:
+window.rowconfigure(0, weight=1)
+window.columnconfigure(0, weight=1)
+window.columnconfigure(1, weight=1)
 
 
 def create_chat_log():
@@ -104,22 +120,6 @@ def create_welcome_message() -> None:
 create_welcome_message()
 
 
-def update_message_counter():
-    """
-    Message counter box
-    """
-    message_counter_box = tk.Text(window, width=16 + len(str(MSG_COUNTER)),
-                                  height=1, wrap=tk.WORD, relief=tk.FLAT, bd=5,
-                                  highlightbackground="white",
-                                  highlightthickness=2)
-    message_counter_box.grid(row=1, column=1)
-    msg = f'Messages sent: {MSG_COUNTER}'
-    message_counter_box.config(state=tk.NORMAL)
-    message_counter_box.insert("1.0", msg)
-    message_counter_box.config(state=tk.DISABLED)
-
-
-update_message_counter()
 PLACEHOLDER_TEXT = "Type your message here..."
 
 
@@ -170,11 +170,31 @@ def create_user_input_area():
 input_area = create_user_input_area()
 input_area.bind("<Return>", show_response)  # Enter/Return to send
 
-window.minsize(500, 400)
-# Makes the window grid cells resizable in this manner:
-window.rowconfigure(0, weight=1)
-window.columnconfigure(0, weight=1)
-window.columnconfigure(1, weight=1)
+
+def update_message_counter():
+    """
+    Message counter box
+    """
+    message_counter_box = tk.Text(window, width=16 + len(str(MSG_COUNTER)),
+                                  height=1, wrap=tk.WORD, relief=tk.FLAT, bd=5,
+                                  highlightbackground="white",
+                                  highlightthickness=2)
+    message_counter_box.grid(row=1, column=1)
+    msg = f'Messages sent: {MSG_COUNTER}'
+    message_counter_box.config(state=tk.NORMAL)
+    message_counter_box.insert("1.0", msg)
+    message_counter_box.config(state=tk.DISABLED)
+
+
+update_message_counter()
+
+# Menu stuff
+# mb = tk.Menubutton(window, text="menu button", relief=tk.FLAT)
+menubar = tk.Menu(window)
+options = tk.Menu(menubar, tearoff=0)
+menubar.add_cascade(label='Options', menu=options)
+options.add_command(label='Toggle shouting', command=toggle_shout)
+window.config(menu=menubar)
 
 # Start the UI event loop
 window.mainloop()
