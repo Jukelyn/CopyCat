@@ -50,7 +50,7 @@ def toggle_shout() -> None:
     SHOUTING = not SHOUTING
 
 
-def show_response(event=None) -> None:  # pylint: disable=unused-argument
+def show_response(event=None) -> str:  # pylint: disable=unused-argument
     """
     Displays the CopyCat response in the GUI alongside the user input
     """
@@ -88,7 +88,7 @@ window.columnconfigure(0, weight=1)
 window.columnconfigure(1, weight=1)
 
 
-def create_chat_log():
+def create_chat_log() -> scrolledtext.ScrolledText:
     """
     Creates the chat log
     """
@@ -142,7 +142,7 @@ def remove_placeholder(event=None) -> None:  # pylint: disable=unused-argument
         input_area.delete("1.0", tk.END)
 
 
-def create_user_input_area():
+def create_user_input_area() -> tk.Text:
     """
     Creates the user input area
     """
