@@ -10,7 +10,7 @@ from tkinter import scrolledtext
 
 EXIT_KEYWORDS = sorted(["end", "exit", "quit", "bye"])
 MSG_COUNTER = 0
-SHOUTING = False
+SHOUTING = True
 
 
 def arr_to_string(arr: list) -> str:
@@ -188,13 +188,42 @@ def update_message_counter():
 
 update_message_counter()
 
-# Menu stuff
-# mb = tk.Menubutton(window, text="menu button", relief=tk.FLAT)
-menubar = tk.Menu(window)
-options = tk.Menu(menubar, tearoff=0)
-menubar.add_cascade(label='Options', menu=options)
-options.add_command(label='Toggle shouting', command=toggle_shout)
-window.config(menu=menubar)
 
+def display_information():
+    """
+    Information displaying frame
+    """
+    display_text = "CopyCat is a program that will simply repeat what you say "
+    display_text += "until the end of time (or your battery is drained), "
+    display_text += "nothing too impressive, just a small project I wanted "
+    display_text += "to work on to brush up on my Tkinter skills."
+
+    root = tk.Tk()
+    root.resizable(False, False)
+    root.title("Additional Information")
+    info_box = tk.Text(root, bd=20, relief=tk.FLAT, wrap=tk.WORD,
+                       highlightbackground="white", highlightthickness=3,
+                       height=4, width=len(display_text) // 5 + 13)  # Clean
+    info_box.insert(tk.END, display_text)
+    info_box.pack()
+    info_box.config(state=tk.DISABLED)
+
+
+def create_menu():
+    """
+    Creates the menu.
+    """
+    menubar = tk.Menu(window)
+    options = tk.Menu(menubar, tearoff=0)
+    info = tk.Menu(menubar, tearoff=0)
+    menubar.add_cascade(label='CopyCat', menu=info)
+    menubar.add_cascade(label='Options', menu=options)
+    options.add_command(label='Toggle shouting feature', command=toggle_shout)
+    info.add_command(label='Additional Information',
+                     command=display_information)
+    window.config(menu=menubar)
+
+
+create_menu()
 # Start the UI event loop
 window.mainloop()
